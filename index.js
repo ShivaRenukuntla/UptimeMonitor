@@ -21,20 +21,29 @@ var server = http.createServer(function(req, res) {
 
   //get the payload if any
   var decoder = new StringDecoder("utf-8");
+  var buffer = "";
+  req.on("data", function(data) {
+    buffer += decoder.write(data);
+  });
 
-  //send the response
-  res.end("Server is initiated and Hello World");
+  req.on("end", function() {
+    buffer += decoder.end();
 
-  //log what path does the person ius asking for i.e. log the request
-  console.log(
-    "Request is received on this path:  " +
-      trimmedPath +
-      "  With the method:  " +
-      method +
-      " With this query String parameters:  ",
-    queryStringObject
-  );
-  console.log("Received with the headers: ", headers);
+    //send the response
+    res.end("Server is initiated and Hello World");
+
+    //log what path does the person ius asking for i.e. log the request
+    console.log(
+      "Request is received on this path:  " +
+        trimmedPath +
+        "  With the method:  " +
+        method +
+        " With this query String parameters:  ",
+      queryStringObject
+    );
+    console.log("Received with the headers: ", headers);
+    console.log("Request is received with payload: ", buffer);
+  });
 });
 
 server.listen(3000, function() {
